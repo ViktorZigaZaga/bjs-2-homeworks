@@ -76,8 +76,8 @@ class Library{
     }
 
     findBookBy(type, value){
-        let book = this.books.filter(element => element[type] === value);
-        return book.length === 0 ? null : book[0];
+        const index = this.books.findIndex((element) => element[type] === value);
+        return (index !== -1) ? this.books.splice(index,1)[0] : null;
       }
 
     giveBookByName(bookName) {
@@ -89,33 +89,27 @@ class Library{
 class Student {
     constructor(name) {
         this.name = name;
+        this.marks = {};
     }
-    addMark(mark, subject) {
-        if (mark < 2 || mark > 5) return console.log("Ошибка, оценка может быть только числом от 2 до 5");
 
-        if (this.subjects === undefined) {
-            this.subjects = new Map;
-            this.subjects.set(subject, [mark]);
-            return;
+    addMark(mark, subject) {
+        if (mark < 2 || mark > 5) {
+            return console.log("Ошибка, оценка может быть только числом от 2 до 5"); 
         }
-        if (this.subjects.get(subject) === undefined) {
-            this.subjects.set(subject, [mark]);
-            return;
+        if (this.marks[subject] === undefined) {
+            this.marks[subject] = [];
         }
-        let marks = this.subjects.get(subject);
-        marks.push(mark);
-        this.subjects.set(subject, marks);
+        this.marks[subject].push(mark);
     }
 
     getAverageBySubject(subject) {
-        if (this.subjects === undefined) return console.log("У студента нет оценок ни по одному предмету");
-        if (this.subjects.get(subject) === undefined) return console.log("Нет данного предмета");
-        return this.subjects.get(subject).reduce((result,mark) => (mark / this.subjects.get(subject).length) + result,0);
+        if (this.marks[subject] === undefined) return 0;
+        return Array.from(this.marks[subject]).reduce((result, mark) => mark / Array.from(this.marks[subject]).length + result,0);
     }
 
     getAverage() {
-        if (this.subjects === undefined) return console.log("У студента нет оценок ни по одному предмету");
-        let listKeys = this.subjects.keys();
-        return listKeys.reduce((result, subject) => (getAverageBySubject(subject) / listKeys.length) + result,0);
+        return Array.from(Object.keys(this.marks))
+            .reduce((result, subject) => (this.getAverageBySubject(subject) / Object.keys(this.marks).length) + result,0);
     }
 }
+
